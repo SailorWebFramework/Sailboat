@@ -1,17 +1,21 @@
 # Sailboat
 
-A virtual dom implementation built for Swift
-
+A signals based state management implementation built for Swift
 
 ## What is Sailboat
 
-Sailboat is built for Sailor Frontend Web Framework, however this implementation can be used as a virtual dom with SwiftUI-like syntax for any Swift application.
-This library is used by Sailor to keep an instance of the DOM in memory to correctly reconcile in the browser.
+Sailboat is built for Sailor Frontend Web Framework, however this implementation can be used as a signals based state and update manager with SwiftUI-like libraries for any Swift application. 
+
+
+## Getting Started
+
+
+🔨 Working on instructions for how you can use Sailboat in your own projects 🔨 
 
 
 ## Components
 
-The dom tree is composed of 3 different kinds of elements Custom Pages, Operator Nodes, and element Nodes.
+The dom tree is composed of 3 different kinds of elements Custom Pages, Fragments, and Element Nodes.
 
 
 ### Page
@@ -19,37 +23,20 @@ The dom tree is composed of 3 different kinds of elements Custom Pages, Operator
 Any component in the virtual dom conforms to the page protocol. This is used by the user to create custom pages.
 Operators and Elements both implement Page
 
-### Operator
+### Fragment
 
-Operator nodes contain a collection of Nodes and contain meta-data attached to the elements for rendering.
-Custom Operator nodes can be created with specific rendering constraints (example: a Sailor Route is an operator node).
+Fragment nodes contain a collection of Nodes and contain meta-data attached to the elements for rendering.
+Custom Fragments nodes can be created with specific rendering constraints (example: a Sailor Route is an fragment node).
 
 ### Element
 
-Element nodes are leaves of the DOM tree.
+Element nodes are leaves of the DOM tree. A custom Page must have a root of exactly one Element node. In Sailor these are the DOM Elements.
 
 
 ## How it works
 
 Sailboats Component model works a bit different then SwiftUI and adjacent libraries and does not have any maximum amount of PageBuilder elements.
 This is due to Sailboats Component model. There are three main parts Custom Pages, Elements, and Operators. 
-
-### Custom Pages
-
-Custom Pages contain one property, a body which is a resultBuilder(ie: PageBuilder) that must contain other Pages, Elements, and Operators inside defined as follows.
-
-
-```swift
-// example below is using Sailor Web Framework
-struct SailboatPage: Page {    
-    var body: some Page {
-        Div {
-            Div("hello world")
-            Div("this is me")
-        }
-    }
-}
-```
 
 
 ### Elements
@@ -61,84 +48,49 @@ Elements also include attributes and events that can be used when rendering the 
 
 ```swift
 public protocol Element: Page {
-    associatedtype ElementAttributeGroup: AttributeGroup
-
-    /// HTML tag name, all lowercased
-    var name: String { get }
-    
-    /// attributes on element
-    var attributes: [String: String] { get set }
+    /// attributes on tag
+    var attributes: [String: () -> any AttributeValue] { get set }
     
     /// event names and values attached to this HTMLElement
-    var events: Events { get set }
+    var events: [String: (EventResult) -> Void] { get set }
     
-    /// TagContent is an enum with associated values either a String or an Operator 
-    var content: TagContent { get set }
+    /// content within HTML tags
+    var content: () -> any Fragment { get set }
+    
+    /// used to render this element
+    var renderer: any Renderable { get set }
+        
 }
 ```
 
-In Sailor these elements are used as HTMLElements and contain either a List operator of children or string value.
+In Sailor these elements are used as HTMLElements and contain either a List Fragment of children or string Fragments.
 
 
-### Operators
+### Fragments
 
-Operators contain a list of children and define certain render characteristics. 
+Fragments contain a list of children and define certain render characteristics. 
 This component is not visually rendered but defines how the children it contains should be rendered.
 
-Built in Operator nodes
+Built in Fragment nodes
 - List -> Defines a list of children
 - Conditional -> Defines a conditional with children (if statement)
 
 
-Sailor Extended Operator Nodes
-- Route -> Defines a Route that is conditionally rendered depending on status
+Nodes must not "switch" locations, and if content changes dynamically it must be wrapped in a Fragment. These fragments must have a unique hash so that Sailboat knows to update the Renderer. So the hashes must only be unique if to any other Fragment body at the same location (for example: if else statement the if body must have a different hash than the else body).
 
+Fragments must have a unique 
 
-### PageBuilder
-
-The Page Builder is a simple result builder that wraps children in a list or a conditional based on its contents.
-This is how the body of a page is rendered , it always returns any Operator node.
-
-```swift
-@resultBuilder
-public struct PageBuilder {
-    public static func buildBlock(_ children: any Page...) -> any Operator {
-        return List(children)
-    }
-    
-    public static func buildOptional(_ component: (any Operator)?) -> any Operator {
-        guard let component = component else { return Conditional([]) } // or? Conditional([Div()])
-        return Conditional(component.children)
-    }
-    
-    public static func buildEither(first component: any Operator) -> any Operator {
-        return Conditional(component.children)
-    }
-
-    public static func buildEither(second component: any Operator) -> any Operator {
-        return Conditional(component.children)
-    }
-    
+```
+public protocol Fragment: Page {
+    var hash: String { get set }
+    var children: [any Page] { get set }
 }
 ```
-
 
 ## Target Manager
 
 The target manager is stored globally in SailboatGlobal, it includes the virtual DOM body along with the environment.
 It also contains the two functions needed for diffing, build(...) and update(...). 
-
-Here is the protocol definition (subject to change with introduction of signals)
-
-```swift
-public protocol TargetManager {
-    var environment: (any SomeEnvironment)? { get set }
-    var body: PageNode? { get set }
-
-    func build<GenericPage: Page>(page: GenericPage)
-    func update()
-}
-```
 
 
 ## Stateful-Design
@@ -146,9 +98,10 @@ public protocol TargetManager {
 These property wrappers are how Sailboat manages state. 
 At the end of an Event these property wrappers tell Sailboat to update the VirtualDOM
 
+
 ### State & Binding
 
-State and Binding Variables are marked witht the @State and @Binding property.
+Out of the box Sailboat has an implementation for State and Binding Variables are marked with the @State and @Binding property.
 
 
 ### Environment
@@ -156,23 +109,16 @@ State and Binding Variables are marked witht the @State and @Binding property.
 Environment is designed to be extensible by the reconceliation libarary by conforming to SomeEnvironment, and include any enviroment properties desired by the wrapped framework.
 These properties can be called by the @Environment using a KeyPath of the entire object.
 
-EnvironmentObjects are also expected to work much like swiftUI using the @EnvironmentObject Property Wrapper
+
+### EnvironmentObjects
 
 
-## PageNodes
-
-A page node is a reference type that holds the current instance of a rendered page as a tree structure.
-These are used when Diffing and a pointer to the head is located in SailboatGlobal.manager body element
+EnvironmentObjects are also work much like swiftUI using the @EnvironmentObject Property Wrapper
 
 
 ## Macros
 
 In the future sailboat hopes to support a series of macros. 
-
-These macros include... 
-marking a page as @StatelessPage that enforces stateless elements and ensures the component is never rerendered.
-
-Creating StateObjects much like swiftUI and combine
 
 ## Diffing
 
@@ -245,6 +191,25 @@ ect.
 Upon re-rendering a page it will rerender all elements except Custom Pages if the states do not intersect.
 Due to the way swift handles strings composition it is difficult to get any more granular updating.
 
+
+### Events
+
+
+Events added to Elements must never change for the lifetime of the elements and will not be diffed.
+
+
+### Attributes
+
+
+Attributes may change over the lifetime of elements and will be dependency tracked. They also can update independently of the elements body, and efficiently update only when neccisary.
+
+
+### More In-Depth Dive
+
+
+🔨 Working a more in depth design of Sailboat  🔨 
+
+
 ### Update Priorities
 
 Some jobs should have more priority in an update than others .
@@ -252,15 +217,10 @@ Some jobs should have more priority in an update than others .
 (Under Construction 🚧)
 
 
-### Reconceliation Injection
-
-Sailboat should allow the reconciler to be able to function without having to loop over the entire DOM twice.
-This should be achived through Injecting pointers to the DOM and update methods to only update functions neccisary.
-
-(Under Construction 🚧)
-
-## Extendible Design
+## Extensible Design
 
 Sailboat is lightweight and designed to be able to be used in a variety of codebases.
 Sailboat does not include any Elements which can be created by the user to create a reactive framework.
+
+
 
