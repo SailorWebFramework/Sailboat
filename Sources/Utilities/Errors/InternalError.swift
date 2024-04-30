@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  InternalError.swift
 //  
 //
 //  Created by Joshua Davis on 12/19/23.

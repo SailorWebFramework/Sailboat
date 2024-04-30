@@ -42,10 +42,7 @@ open class TargetManager {
         for stateID in eventScheduler.states {
             let elements = managedPages.statefulElements[stateID] ?? []
             let attributes = managedPages.attributes[stateID] ?? []
-
-//            print("updating elements: \(elements)")
-//            print("updating attributes: \(attributes)")
-
+            
             // body updates need a rerender of the body of the element
             for sailboatID in elements {
                 if let renderer = managedPages.renderers[sailboatID],
