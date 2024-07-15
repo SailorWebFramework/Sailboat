@@ -17,6 +17,13 @@ public final class SailboatGlobal {
         _ sailboatManager: TargetManager
     ) {
         Self.manager = sailboatManager
+        
+//        SailboatGlobal.manager.managedPages.registerElement(body, body.content())
+        
+    }
+    
+    public static func initialize(body: any Element) {
+        SailboatGlobal.manager.build(page: body)
     }
 
 }

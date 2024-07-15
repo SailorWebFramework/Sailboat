@@ -5,7 +5,7 @@
 //  Created by Joshua Davis on 10/8/23.
 //
 
-public typealias StateID = UInt32 //String
+public typealias StateID = UniqueID //String
 
 public protocol Stateful {
     associatedtype Value: Equatable
@@ -14,8 +14,9 @@ public protocol Stateful {
 
 @propertyWrapper
 public class State<Value: Equatable>: Identifiable, Stateful {
-    public let id: StateID = ManagedStates.registerID()
-    
+//    public let id: StateID = ManagedStates.registerID()
+    public let id: StateID = IDGenerator.generateID()
+
     private var value: Value
 
     public var wrappedValue: Value {

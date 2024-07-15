@@ -12,7 +12,6 @@ public extension Renderable {
         var newIndex = index
         
         if let newContent = newContent as? any Element {
-            
             RenderableUtils.build(newContent)
 
             if newIndex != -1 {
@@ -48,7 +47,8 @@ public extension Renderable {
             
             // register sailboat ID if it doesnt already exist
             if self.sailboatID == nil {
-                sailboatID = SailboatGlobal.managedPages.createSailboatID()
+//                sailboatID = SailboatGlobal.managedPages.createSailboatID()
+                sailboatID = IDGenerator.generateID()
                 self.setSailboatID(sailboatID)
                 SailboatGlobal.manager.managedPages.renderers[sailboatID] = self
 
