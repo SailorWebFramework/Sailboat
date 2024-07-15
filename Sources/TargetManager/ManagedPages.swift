@@ -24,7 +24,7 @@ public struct ElementAttribute: Hashable {
     
 }
 
-public typealias SailboatID = UInt32 // String
+public typealias SailboatID = UniqueID // String
 
 extension SailboatID: AttributeValue { }
 
@@ -49,7 +49,7 @@ public final class ManagedPages {
     
     /// references to element attributes that are neccisary for state certian changes
     public var attributes: [StateID: Set<ElementAttribute>] = [:]
-
+    
     /// map of states to the pages they include
     public var statefulElements: [StateID: Set<SailboatID>] = [:]
     
@@ -61,7 +61,7 @@ public final class ManagedPages {
         
         if states.isEmpty { return }
         
-        let newSID = createSailboatID()
+        let newSID = IDGenerator.generateID() //createSailboatID()
         
         element.renderer.setSailboatID(newSID)
 
@@ -74,22 +74,22 @@ public final class ManagedPages {
         }
     }
 
-    public func createSailboatID() -> SailboatID {
-//        if let someID = Self.freedSailboatIDs.first {
-//            Self.freedSailboatIDs.remove(someID)
-//            return someID
+//    public func createSailboatID() -> SailboatID {
+////        if let someID = Self.freedSailboatIDs.first {
+////            Self.freedSailboatIDs.remove(someID)
+////            return someID
+////        }
+//        ManagedPages.globalSailboatID += 1
+//        return ManagedPages.globalSailboatID
+//    }
+//    
+//    public func removeSailboatID(_ sid: SailboatID) {
+//        // is this more efficient than just doing the ids normally
+//        if sid == ManagedPages.globalSailboatID {
+//            ManagedPages.globalSailboatID -= 1
 //        }
-        ManagedPages.globalSailboatID += 1
-        return ManagedPages.globalSailboatID
-    }
-    
-    public func removeSailboatID(_ sid: SailboatID) {
-        // is this more efficient than just doing the ids normally
-        if sid == ManagedPages.globalSailboatID {
-            ManagedPages.globalSailboatID -= 1
-        }
-        
-//        Self.freedSailboatIDs.insert(sid)
-    }
+//        
+////        Self.freedSailboatIDs.insert(sid)
+//    }
     
 }

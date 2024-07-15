@@ -69,7 +69,8 @@ public enum RenderableUtils {
             SailboatGlobal.managedPages.statefulElements[stateID]?.remove(sailboatID)
         }
         
-        SailboatGlobal.managedPages.removeSailboatID(sailboatID)
+//        SailboatGlobal.managedPages.removeSailboatID(sailboatID)
+        IDGenerator.expireID(sailboatID)
     }
    
 }

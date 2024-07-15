@@ -34,7 +34,7 @@ public extension Renderable {
         let elementCount = oldList.children.count
                 
         var deepindex = deepindex
-                
+                        
         for i in 0..<elementCount {
             if let oldElement = oldList.children[i] as? any Element {
                 deepindex += 1
@@ -47,11 +47,10 @@ public extension Renderable {
                 }
                 
                 continue
-            }
-            
+            } else
             if let oldOp = oldList.children[i] as? any Fragment,
                var newOp = newList.children[i] as? any Fragment {
-                                
+
                 // check if the list hash is the same
                 if oldOp.hash == newOp.hash {
                     deepindex = reconcileBody(oldList: oldOp, newList: &newOp, index: deepindex)
@@ -60,7 +59,8 @@ public extension Renderable {
                     // TODO: instead of clear children and rebuild consider diffing
                     // This will allow SwiftUI-like libraries to be able to function correctly
                     // this is because Sailor uses closures for data but swiftUI doesnt
-                    clearChildren(from: oldOp, at: deepindex)
+                    clearFragment(from: oldOp, at: deepindex)
+
                     deepindex = build(newOp, after: deepindex)
                 }
                 
@@ -78,22 +78,21 @@ public extension Renderable {
         return deepindex
     }
     
-    private func clearChildren(from content: any Fragment, at index: Int) {
+    private func clearFragment(from content: any Fragment, at index: Int) {
 //        guard let myPage = SailboatGlobal.manager.managedPages.elements[self.id] else {
 //            fatalError("old content doesnt exist or is stateless")
 //        }
         
         for child in content.children {
+            print("clearing index \(index)")
             
             if let child = child as? any Element {
                 child.renderer.remove()
-                
                 continue
             }
             
             if let child = child as? any Fragment {
-                clearChildren(from: child, at: index)
-                
+                clearFragment(from: child, at: index)
                 continue
             }
             

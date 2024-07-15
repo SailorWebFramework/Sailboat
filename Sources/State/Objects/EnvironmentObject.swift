@@ -6,7 +6,7 @@
 //
 
 @propertyWrapper
-public class EnvironmentObject<Value: ObservableObject> {
+public class EnvironmentObject<Value: AnyObject> {
     
     public var wrappedValue: Value {
         return getValue()
