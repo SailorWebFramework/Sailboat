@@ -5,9 +5,10 @@
 //  Created by Joshua Davis on 12/29/23.
 //
 
+@MainActor
 public final class SailboatGlobal {
     //TODO: a little gross force unwrapping
-    nonisolated(unsafe) public static var manager: (TargetManager)! = nil
+    public static var manager: (TargetManager)! = nil
         
     public static var managedPages: ManagedPages { manager.managedPages }
 

@@ -28,12 +28,8 @@ public typealias SailboatID = UniqueID // String
 
 extension SailboatID: AttributeValue { }
 
+@MainActor
 public final class ManagedPages {
-    
-    nonisolated(unsafe) private static var globalSailboatID: SailboatID = 0
-//    private static var globalManagerValues: (radius: Int, value: Int) = (0,0)
-
-    nonisolated(unsafe) private static var freedSailboatIDs: Set<SailboatID> = .init()
 
     ///
     public var renderers: [SailboatID: any Renderable] = [:]
@@ -74,22 +70,4 @@ public final class ManagedPages {
         }
     }
 
-//    public func createSailboatID() -> SailboatID {
-////        if let someID = Self.freedSailboatIDs.first {
-////            Self.freedSailboatIDs.remove(someID)
-////            return someID
-////        }
-//        ManagedPages.globalSailboatID += 1
-//        return ManagedPages.globalSailboatID
-//    }
-//    
-//    public func removeSailboatID(_ sid: SailboatID) {
-//        // is this more efficient than just doing the ids normally
-//        if sid == ManagedPages.globalSailboatID {
-//            ManagedPages.globalSailboatID -= 1
-//        }
-//        
-////        Self.freedSailboatIDs.insert(sid)
-//    }
-    
 }

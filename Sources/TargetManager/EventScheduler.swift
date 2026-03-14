@@ -5,6 +5,7 @@
 //  Created by Joshua Davis on 3/14/24.
 //
 
+@MainActor
 public protocol EventScheduler {
     var states: Set<StateID> { get set }
 

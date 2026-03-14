@@ -6,6 +6,7 @@
 //
 
 /// Manager used for testing, does not render to DOM
+@MainActor
 open class TargetManager {
 
     /// the global environment stored here
