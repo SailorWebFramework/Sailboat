@@ -30,10 +30,10 @@ extension SailboatID: AttributeValue { }
 
 public final class ManagedPages {
     
-    private static var globalSailboatID: SailboatID = 0
+    nonisolated(unsafe) private static var globalSailboatID: SailboatID = 0
 //    private static var globalManagerValues: (radius: Int, value: Int) = (0,0)
 
-    private static var freedSailboatIDs: Set<SailboatID> = .init()
+    nonisolated(unsafe) private static var freedSailboatIDs: Set<SailboatID> = .init()
 
     ///
     public var renderers: [SailboatID: any Renderable] = [:]

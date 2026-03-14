@@ -7,7 +7,7 @@
 
 public final class SailboatGlobal {
     //TODO: a little gross force unwrapping
-    public static var manager: (TargetManager)! = nil
+    nonisolated(unsafe) public static var manager: (TargetManager)! = nil
         
     public static var managedPages: ManagedPages { manager.managedPages }
 

@@ -8,7 +8,7 @@
 public typealias UniqueID = UInt64
 
 public enum IDGenerator {
-    private static var currentID: UniqueID = 0
+    nonisolated(unsafe) private static var currentID: UniqueID = 0
     
     public static func generateID() -> UniqueID {
         currentID += 1
