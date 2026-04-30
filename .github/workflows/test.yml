@@ -16,4 +16,3 @@ jobs:
 
       - name: Run Sailboat unit tests
         run: swift test --configuration debug
-        working-directory: Sailboat
