@@ -1,0 +1,19 @@
+name: Sailboat Tests
+
+on:
+  push:
+    branches: [feature-fin-v2, main]
+  pull_request:
+
+jobs:
+  sailboat-tests:
+    name: Swift Tests (macOS)
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Sailboat unit tests
+        run: swift test --configuration debug
+        working-directory: Sailboat
