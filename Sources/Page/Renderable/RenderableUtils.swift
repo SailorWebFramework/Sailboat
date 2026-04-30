@@ -57,20 +57,21 @@ public enum RenderableUtils {
         SailboatGlobal.managedPages.bodies[sailboatID] = nil
         SailboatGlobal.managedPages.children[sailboatID] = nil
         SailboatGlobal.managedPages.renderers[sailboatID] = nil
-        
-        // TODO: must loop over, make this more efficient
 
-        for stateID in SailboatGlobal.managedPages.attributes.keys {
+        // Use reverse index to remove in O(state count of this element)
+        // instead of the old O(total states × elements) nested iteration.
+        let stateIDs = SailboatGlobal.managedPages.elementStates[sailboatID] ?? []
+        for stateID in stateIDs {
             SailboatGlobal.managedPages.attributes[stateID] = SailboatGlobal.managedPages.attributes[stateID]?.filter {
                 $0.sid != sailboatID
             }
-        }
-        
-        for stateID in SailboatGlobal.managedPages.statefulElements.keys {
             SailboatGlobal.managedPages.statefulElements[stateID]?.remove(sailboatID)
+            if SailboatGlobal.managedPages.statefulElements[stateID]?.isEmpty == true {
+                SailboatGlobal.managedPages.statefulElements.removeValue(forKey: stateID)
+            }
         }
-        
-//        SailboatGlobal.managedPages.removeSailboatID(sailboatID)
+        SailboatGlobal.managedPages.elementStates.removeValue(forKey: sailboatID)
+
         IDGenerator.expireID(sailboatID)
     }
    
