@@ -57,6 +57,7 @@ open class TargetManager {
                     // TODO: consider removing previous states dumped because it short circuits so theres no need to test it :ex. if a || b || c ,, i dont need to check b or c until a changes
                     for state in states {
                         managedPages.statefulElements[state, default: []].insert(sailboatID)
+                        managedPages.elementStates[sailboatID, default: []].insert(state)
                     }
                     
                     renderer.reconcile(with: content)

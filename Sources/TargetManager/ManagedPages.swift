@@ -48,17 +48,21 @@ public final class ManagedPages {
     
     /// map of states to the pages they include
     public var statefulElements: [StateID: Set<SailboatID>] = [:]
-    
+
+    /// reverse index: maps each element to the set of states it depends on
+    /// kept in sync with statefulElements so removeCache is O(state count of element)
+    public var elementStates: [SailboatID: Set<StateID>] = [:]
+
     /// the current callback history of changed state values, use dump to clear the history
     public var stateHistory: Set<StateID> = []
-    
+
     public func registerElement(_ element: any Element, _ operatorPage: any Fragment) {
         let states = SailboatGlobal.manager.dump()
-        
+
         if states.isEmpty { return }
-        
+
         let newSID = IDGenerator.generateID() //createSailboatID()
-        
+
         element.renderer.setSailboatID(newSID)
 
         self.bodies[newSID] = element.content
@@ -67,6 +71,7 @@ public final class ManagedPages {
 
         for state in states {
             self.statefulElements[state, default: []].insert(newSID)
+            self.elementStates[newSID, default: []].insert(state)
         }
     }
 
