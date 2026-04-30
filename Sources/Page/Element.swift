@@ -22,8 +22,8 @@ public protocol Element: Page {
 }
 
 public extension Element {
-    var description: String {
-        "Element(type: \(type(of: self)), attributes: \(self.attributes), events: \(self.events), content: \(String(describing: self.content)))"
+    nonisolated var description: String {
+        "Element(type: \(type(of: self)))"
     }
 }
 

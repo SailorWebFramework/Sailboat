@@ -18,8 +18,8 @@ public protocol Fragment: Page {
 }
 
 public extension Fragment {
-    var description: String {
-        "Fragment(type: \(type(of: self)), children: \(children.count)"
+    nonisolated var description: String {
+        "Fragment(type: \(type(of: self)))"
     }
 
     

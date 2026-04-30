@@ -12,8 +12,8 @@ public struct List: Fragment {
     
     public var children: [any Page]
 
-    public var description: String {
-        "List(children: \(children.count), hash: \(hash))"
+    nonisolated public var description: String {
+        "List"
     }
     
     public init() {
