@@ -7,6 +7,7 @@
 
 public typealias UniqueID = UInt64
 
+@MainActor
 public enum IDGenerator {
     private static var currentID: UniqueID = 0
     

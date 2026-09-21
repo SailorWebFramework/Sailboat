@@ -6,10 +6,10 @@
 //
 
 // TODO: add a CustomPage and call it page in sailor?
-public protocol Page: CustomStringConvertible {
+@MainActor public protocol Page: CustomStringConvertible {
     // todo: typeIdentifier here for signals
     associatedtype PageBody: Page
-    
+
     /// body of the page element, resultBuilder can contain HTMLElements and custom Page elements
     var body: PageBody { get }
         
@@ -17,7 +17,7 @@ public protocol Page: CustomStringConvertible {
 
 public extension Page {
 
-    var description: String {
+    nonisolated var description: String {
         "Page(type: \(type(of: self)))"
     }
         

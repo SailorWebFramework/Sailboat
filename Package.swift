@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 6.0
 import PackageDescription
 import CompilerPluginSupport
 
@@ -18,6 +18,11 @@ let package = Package(
             name: "Sailboat",
             dependencies: [],
             path: "Sources"
+        ),
+        .testTarget(
+            name: "SailboatTests",
+            dependencies: ["Sailboat"],
+            path: "Tests/SailboatTests"
         )
     ]
 )

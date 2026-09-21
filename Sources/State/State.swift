@@ -12,6 +12,7 @@ public protocol Stateful {
     var id: StateID { get }
 }
 
+@MainActor
 @propertyWrapper
 public class State<Value: Equatable>: Identifiable, Stateful {
 //    public let id: StateID = ManagedStates.registerID()

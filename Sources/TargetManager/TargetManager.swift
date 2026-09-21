@@ -6,6 +6,7 @@
 //
 
 /// Manager used for testing, does not render to DOM
+@MainActor
 open class TargetManager {
 
     /// the global environment stored here
@@ -56,6 +57,7 @@ open class TargetManager {
                     // TODO: consider removing previous states dumped because it short circuits so theres no need to test it :ex. if a || b || c ,, i dont need to check b or c until a changes
                     for state in states {
                         managedPages.statefulElements[state, default: []].insert(sailboatID)
+                        managedPages.elementStates[sailboatID, default: []].insert(state)
                     }
                     
                     renderer.reconcile(with: content)
@@ -68,8 +70,10 @@ open class TargetManager {
             
             // TODO: maybe consider batching these attribute updates somehow?
             for attribute in attributes {
-                guard let renderer = self.managedPages.renderers[attribute.sid] else { return }
- 
+                // a missing renderer means the element was removed; skip it, but keep
+                // processing the remaining attributes and states in this pass
+                guard let renderer = self.managedPages.renderers[attribute.sid] else { continue }
+
                 renderer.renderAttributes([attribute.name: attribute.value])
             }
             
