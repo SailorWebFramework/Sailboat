@@ -32,6 +32,7 @@ open class TargetManager {
         eventScheduler.blockUpdates()
         
         RenderableUtils.build(page)
+        managedPages.endOfRenderPass()
         
         eventScheduler.unblockUpdates()
 
@@ -53,12 +54,20 @@ open class TargetManager {
                     let content: any Fragment = body()
                              
                     let states = dump()
-                    
-                    // TODO: consider removing previous states dumped because it short circuits so theres no need to test it :ex. if a || b || c ,, i dont need to check b or c until a changes
-                    for state in states {
-                        managedPages.statefulElements[state, default: []].insert(sailboatID)
-                        managedPages.elementStates[sailboatID, default: []].insert(state)
+
+                    // replace the dependency set: signals this render did not read
+                    // (e.g. behind a false conditional) stop triggering it
+                    let previous = managedPages.elementStates[sailboatID] ?? []
+                    for gone in previous.subtracting(states) {
+                        managedPages.statefulElements[gone]?.remove(sailboatID)
+                        if managedPages.statefulElements[gone]?.isEmpty == true {
+                            managedPages.statefulElements.removeValue(forKey: gone)
+                        }
                     }
+                    for added in states.subtracting(previous) {
+                        managedPages.statefulElements[added, default: []].insert(sailboatID)
+                    }
+                    managedPages.elementStates[sailboatID] = states
                     
                     renderer.reconcile(with: content)
                                         

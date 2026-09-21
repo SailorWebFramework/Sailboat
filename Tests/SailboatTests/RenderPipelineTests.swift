@@ -111,16 +111,21 @@ struct RenderPipelineTests {
         let (scheduler, manager) = makeManager()
         let text = State(wrappedValue: "before")
         let root = MockRenderable()
+        let textRenderer = MockRenderable()
         var elem = TestElement(renderer: root)
-        elem.content = { List([TestValueElement(text.wrappedValue, renderer: MockRenderable())], hash: "") }
+        elem.content = { List([TestValueElement(text.wrappedValue, renderer: textRenderer)], hash: "") }
         manager.build(page: elem)
         guard let sid = root.sailboatID else { Issue.record("missing sailboatID"); return }
 
         text.wrappedValue = "after"
         flush(manager, scheduler)
 
-        let snapshot = manager.managedPages.children[sid]?.children.first as? TestValueElement
-        #expect(snapshot?.value == "after")
+        // the snapshot holds the renderer that was swapped in, not the Element struct
+        guard case .element(let renderer, _)? = manager.managedPages.children[sid]?.children.first else {
+            Issue.record("expected an element node"); return
+        }
+        #expect(renderer as AnyObject === textRenderer)
+        #expect(root.replaceAtCalls.count == 1)
     }
 
     @Test("updating a State with no dependents issues no renderer calls")
