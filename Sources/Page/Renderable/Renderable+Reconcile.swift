@@ -40,13 +40,20 @@ public extension Renderable {
             switch oldNode {
             case .element(let renderer, let owned):
                 deepindex += 1
+                // the element is reused as-is; anything inside it that reads a signal updates itself
+                nodes.append(.element(renderer: renderer, owned: owned))
 
-                // keeps the old renderer, or replaces a value-element ex: String
-                if let newValue = newChild as? any ValueElement {
-                    self.replace(at: deepindex, with: newValue.renderer)
-                    nodes.append(.element(renderer: newValue.renderer, owned: owned))
+            case .text(let renderer, let oldValue):
+                deepindex += 1
+                guard let newValue = newChild as? any ValueElement else {
+                    fatalError("reconciling text against a non-value element")
+                }
+                let value = newValue.value.description
+                if value == oldValue {
+                    nodes.append(.text(renderer: renderer, value: oldValue))
                 } else {
-                    nodes.append(.element(renderer: renderer, owned: owned))
+                    self.replace(at: deepindex, with: newValue.renderer)
+                    nodes.append(.text(renderer: newValue.renderer, value: value))
                 }
 
             case .fragment(let oldFragment):
@@ -91,6 +98,9 @@ public extension Renderable {
             for sid in owned { RenderableUtils.removeSubtreeCache(rootedAt: sid) }
             renderer.remove()
 
+        case .text(let renderer, _):
+            renderer.remove()
+
         case .fragment(let fragment):
             clear(fragment)
 
@@ -103,7 +113,7 @@ public extension Renderable {
     /// DOM removal only — ownership under a page is freed by the page node itself.
     private func removeDOM(_ node: RenderedNode) {
         switch node {
-        case .element(let renderer, _): renderer.remove()
+        case .element(let renderer, _), .text(let renderer, _): renderer.remove()
         case .fragment(let fragment): fragment.children.forEach(removeDOM)
         case .page(let children, _): children.forEach(removeDOM)
         }

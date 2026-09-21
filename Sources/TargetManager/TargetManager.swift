@@ -49,7 +49,6 @@ open class TargetManager {
             for sailboatID in elements {
                 if let renderer = managedPages.renderers[sailboatID],
                    let body = managedPages.bodies[sailboatID] {
-                    print("UPDATING item: \(sailboatID)")
                     // builds the shallow content body and adds its state to the watchers
                     let content: any Fragment = body()
                              

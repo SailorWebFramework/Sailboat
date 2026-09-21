@@ -34,6 +34,8 @@ public enum RenderedNode {
     /// an element and the stateful elements rooted under it whose nearest stateful
     /// ancestor is the snapshot's owner (so clearing this node can free them)
     case element(renderer: any Renderable, owned: [SailboatID])
+    /// a value element (text); `value` is what was rendered, so identical text is skipped
+    case text(renderer: any Renderable, value: String)
     /// a nested fragment (conditional / loop body)
     case fragment(RenderedFragment)
     /// a custom Page, flattened into the nodes its body produced
@@ -42,7 +44,7 @@ public enum RenderedNode {
     /// number of DOM nodes this node contributes to its parent renderer
     public var domCount: Int {
         switch self {
-        case .element: return 1
+        case .element, .text: return 1
         case .fragment(let fragment): return fragment.domCount
         case .page(let children, _): return children.reduce(0) { $0 + $1.domCount }
         }

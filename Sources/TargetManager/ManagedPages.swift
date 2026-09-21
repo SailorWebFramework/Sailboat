@@ -145,6 +145,7 @@ extension RenderedFragment {
     /// Snapshot of a fragment before its children are built (no ownership info yet).
     @MainActor static func provisional(_ fragment: any Fragment) -> RenderedFragment {
         RenderedFragment(of: fragment, children: fragment.children.map { child in
+            if let value = child as? any ValueElement { return .text(renderer: value.renderer, value: value.value.description) }
             if let element = child as? any Element { return .element(renderer: element.renderer, owned: []) }
             if let nested = child as? any Fragment { return .fragment(provisional(nested)) }
             return .page(children: [], owned: [])

@@ -120,11 +120,12 @@ struct RenderPipelineTests {
         text.wrappedValue = "after"
         flush(manager, scheduler)
 
-        // the snapshot holds the renderer that was swapped in, not the Element struct
-        guard case .element(let renderer, _)? = manager.managedPages.children[sid]?.children.first else {
-            Issue.record("expected an element node"); return
+        // the snapshot holds the renderer that was swapped in and the new text, not the Element struct
+        guard case .text(let renderer, let value)? = manager.managedPages.children[sid]?.children.first else {
+            Issue.record("expected a text node"); return
         }
         #expect(renderer as AnyObject === textRenderer)
+        #expect(value == "after")
         #expect(root.replaceAtCalls.count == 1)
     }
 

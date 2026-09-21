@@ -62,6 +62,9 @@ public enum RenderableUtils {
                 element.renderer.addToParent(parent.renderer)
             }
             
+            if let value = element as? any ValueElement {
+                return [.text(renderer: value.renderer, value: value.value.description)]
+            }
             return [.element(renderer: element.renderer, owned: managed.owned(since: mark))]
         }
         
