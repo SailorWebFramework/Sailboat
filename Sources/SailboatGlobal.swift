@@ -5,6 +5,7 @@
 //  Created by Joshua Davis on 12/29/23.
 //
 
+@MainActor
 public final class SailboatGlobal {
     //TODO: a little gross force unwrapping
     public static var manager: (TargetManager)! = nil

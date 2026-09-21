@@ -8,6 +8,7 @@
 
 public protocol SomeEnvironment { }
 
+@MainActor
 @propertyWrapper
 public class Environment<TargetEnvironment: SomeEnvironment, Value> {
     

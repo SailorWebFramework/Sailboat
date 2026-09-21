@@ -5,6 +5,7 @@
 //  Created by Joshua Davis on 3/8/24.
 //
 
+@MainActor
 @propertyWrapper
 public class EnvironmentObject<Value: AnyObject> {
     
