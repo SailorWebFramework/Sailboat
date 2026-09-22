@@ -58,7 +58,7 @@ struct ManagedPagesTests {
         // stateHistory is empty — registerElement should bail early
         let elem = TestElement(renderer: MockRenderable())
         let op = List()
-        manager.managedPages.registerElement(elem, op)
+        manager.managedPages.registerElement(elem)
         #expect(manager.managedPages.bodies.isEmpty)
         #expect(manager.managedPages.renderers.isEmpty)
     }
@@ -71,7 +71,7 @@ struct ManagedPagesTests {
         let mock = MockRenderable()
         let elem = TestElement(renderer: mock)
         let op = List()
-        manager.managedPages.registerElement(elem, op)
+        manager.managedPages.registerElement(elem)
         #expect(!manager.managedPages.bodies.isEmpty)
         #expect(!manager.managedPages.renderers.isEmpty)
     }
@@ -82,7 +82,7 @@ struct ManagedPagesTests {
         let stateID: StateID = 77
         manager.managedPages.stateHistory = [stateID]
         let elem = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elem, List())
+        manager.managedPages.registerElement(elem)
         #expect(manager.managedPages.statefulElements[stateID] != nil)
         #expect(!(manager.managedPages.statefulElements[stateID]?.isEmpty ?? true))
     }
@@ -96,7 +96,7 @@ struct ManagedPagesTests {
         let stateB: StateID = 101
         manager.managedPages.stateHistory = [stateA, stateB]
         let elem = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elem, List())
+        manager.managedPages.registerElement(elem)
         // Recover the assigned SailboatID from statefulElements
         guard let sid = manager.managedPages.statefulElements[stateA]?.first else {
             Issue.record("statefulElements[stateA] should not be empty")
@@ -113,17 +113,17 @@ struct ManagedPagesTests {
         // elem1 → states {1,2,3}
         manager.managedPages.stateHistory = [1, 2, 3]
         let elem1 = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elem1, List())
+        manager.managedPages.registerElement(elem1)
 
         // elem2 → states {2,3,4}
         manager.managedPages.stateHistory = [2, 3, 4]
         let elem2 = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elem2, List())
+        manager.managedPages.registerElement(elem2)
 
         // elem3 → states {4,5}
         manager.managedPages.stateHistory = [4, 5]
         let elem3 = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elem3, List())
+        manager.managedPages.registerElement(elem3)
 
         // Resolve SailboatIDs: elem1 owns the ID that appears in state 1 only
         guard let sid1 = manager.managedPages.statefulElements[1]?.first else {
@@ -156,12 +156,12 @@ struct ManagedPagesTests {
         // elemA → state 10 only
         manager.managedPages.stateHistory = [10]
         let elemA = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elemA, List())
+        manager.managedPages.registerElement(elemA)
 
         // elemB → state 20 only
         manager.managedPages.stateHistory = [20]
         let elemB = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elemB, List())
+        manager.managedPages.registerElement(elemB)
 
         guard let sidA = manager.managedPages.statefulElements[10]?.first else {
             Issue.record("elemA should be in state 10"); return
@@ -188,7 +188,7 @@ struct ManagedPagesTests {
         // Single element in state 99 — removing it should also remove the bucket
         manager.managedPages.stateHistory = [99]
         let elem = TestElement(renderer: MockRenderable())
-        manager.managedPages.registerElement(elem, List())
+        manager.managedPages.registerElement(elem)
 
         guard let sid = manager.managedPages.statefulElements[99]?.first else {
             Issue.record("element should be in state 99"); return
