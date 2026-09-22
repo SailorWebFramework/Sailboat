@@ -89,7 +89,7 @@ public final class ManagedPages {
     /// Registers `element` as body-stateful if building its content read any signal.
     /// The snapshot stored here is provisional; `RenderableUtils.build` replaces it
     /// once the children are built and their ownership is known.
-    public func registerElement(_ element: any Element, _ operatorPage: any Fragment) {
+    public func registerElement(_ element: any Element) {
         let states = SailboatGlobal.manager.dump()
 
         if states.isEmpty { return }
@@ -97,7 +97,6 @@ public final class ManagedPages {
         let sid = assignID(to: element.renderer)
 
         self.bodies[sid] = element.content
-        self.children[sid] = RenderedFragment.provisional(operatorPage)
 
         for state in states {
             self.statefulElements[state, default: []].insert(sid)
@@ -139,16 +138,4 @@ public final class ManagedPages {
         if ancestorStack.isEmpty { registrationLog.removeAll(keepingCapacity: true) }
     }
 
-}
-
-extension RenderedFragment {
-    /// Snapshot of a fragment before its children are built (no ownership info yet).
-    @MainActor static func provisional(_ fragment: any Fragment) -> RenderedFragment {
-        RenderedFragment(of: fragment, children: fragment.children.map { child in
-            if let value = child as? any ValueElement { return .text(renderer: value.renderer, value: value.value.description) }
-            if let element = child as? any Element { return .element(renderer: element.renderer, owned: []) }
-            if let nested = child as? any Fragment { return .fragment(provisional(nested)) }
-            return .page(children: [], owned: [])
-        })
-    }
 }

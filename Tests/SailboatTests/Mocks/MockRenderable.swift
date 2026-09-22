@@ -21,7 +21,6 @@ final class MockRenderable: Renderable {
     var addToParentTargets: [ObjectIdentifier] = []
     var insertBeforeCalls: [Int] = []
     var insertAfterCalls: [Int] = []
-    var removeAtCalls: [Int] = []
 
     // Attribute & event logs
     var updatedAttributes: [(name: String, value: any AttributeValue)] = []
@@ -44,10 +43,6 @@ final class MockRenderable: Renderable {
 
     func remove() {
         removeCalls += 1
-    }
-
-    func remove(at deepIndex: Int) {
-        removeAtCalls.append(deepIndex)
     }
 
     func replace(at index: Int, with renderable: any Renderable) {

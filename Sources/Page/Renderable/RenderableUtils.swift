@@ -39,7 +39,7 @@ public enum RenderableUtils {
             // run the page builder closure to create an operator node
             let operatorPage = element.content()
             
-            managed.registerElement(element, operatorPage)
+            managed.registerElement(element)
             
             // render current page to parent
             element.renderer.renderAttributes(element.attributes)

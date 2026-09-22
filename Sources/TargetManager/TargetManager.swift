@@ -41,12 +41,17 @@ open class TargetManager {
     }
     
     open func update() {
+        // an element (or attribute) reading several signals that all changed this
+        // frame must re-render once, not once per signal
+        var rendered: Set<SailboatID> = []
+        var renderedAttributes: Set<ElementAttribute> = []
+
         for stateID in eventScheduler.states {
             let elements = managedPages.statefulElements[stateID] ?? []
             let attributes = managedPages.attributes[stateID] ?? []
             
             // body updates need a rerender of the body of the element
-            for sailboatID in elements {
+            for sailboatID in elements where !rendered.contains(sailboatID) {
                 if let renderer = managedPages.renderers[sailboatID],
                    let body = managedPages.bodies[sailboatID] {
                     // builds the shallow content body and adds its state to the watchers
@@ -68,6 +73,7 @@ open class TargetManager {
                     }
                     managedPages.elementStates[sailboatID] = states
                     
+                    rendered.insert(sailboatID)
                     renderer.reconcile(with: content)
                                         
                 } else {
@@ -77,7 +83,7 @@ open class TargetManager {
             }
             
             // TODO: maybe consider batching these attribute updates somehow?
-            for attribute in attributes {
+            for attribute in attributes where renderedAttributes.insert(attribute).inserted {
                 // a missing renderer means the element was removed; skip it, but keep
                 // processing the remaining attributes and states in this pass
                 guard let renderer = self.managedPages.renderers[attribute.sid] else { continue }
