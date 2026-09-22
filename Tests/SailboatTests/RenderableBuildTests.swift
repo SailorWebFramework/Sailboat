@@ -147,7 +147,7 @@ struct RenderableBuildTests {
         #expect(a.insertBeforeCalls == [0])
         #expect(b.insertAfterCalls == [0])
         #expect(c.insertAfterCalls == [1])
-        #expect(last == 2)
+        #expect(last.index == 2)
     }
 
     @Test("build(after: n) counts elements through nested fragments and custom pages")
@@ -164,13 +164,13 @@ struct RenderableBuildTests {
 
         #expect(a.insertAfterCalls == [4])
         #expect(b.insertAfterCalls == [5])
-        #expect(last == 6)
+        #expect(last.index == 6)
     }
 
     @Test("build of an empty fragment returns the starting index unchanged")
     func deepIndexEmpty() {
         _ = makeManager()
         let root = MockRenderable()
-        #expect(root.build(List(), after: 3) == 3)
+        #expect(root.build(List(), after: 3).index == 3)
     }
 }
