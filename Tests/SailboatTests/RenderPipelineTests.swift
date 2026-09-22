@@ -83,7 +83,7 @@ struct RenderPipelineTests {
         // a same-shape update must not touch structure
         #expect(root.insertBeforeCalls.isEmpty)
         #expect(root.insertAfterCalls.isEmpty)
-        #expect(root.removeAtCalls.isEmpty)
+        #expect(root.removeCalls == 0)
     }
 
     @Test("replacement targets the correct deep index among siblings")

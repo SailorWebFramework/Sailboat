@@ -9,7 +9,7 @@
 public protocol Renderable {
     
     /// the sailboat ID of the renderer
-    var sailboatID: SailboatID? { get set }
+    var sailboatID: SailboatID? { get }
     
     /// add this element to the parent element
     func addToParent(_ parent: any Renderable)
@@ -22,9 +22,6 @@ public protocol Renderable {
 
     /// remove this element permenately
     func remove()
-    
-    /// removes child of the current element at the deep index (including the inner of Fragments)
-    func remove(at deepIndex: Int)
     
     /// 
     func replace(at: Int, with: any Renderable)
